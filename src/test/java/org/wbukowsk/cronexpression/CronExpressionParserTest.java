@@ -1,5 +1,6 @@
 package org.wbukowsk.cronexpression;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,22 +30,8 @@ class CronExpressionParserTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideSimpleCommaSeparatedArguments")
-    void shouldParseSimpleCommaSeparatedArguments(String argument, CronTimeUnit argType, List<Integer> expected) {
-        List<Integer> result = parseTimeUnitExpression(argument, argType);
-        assertEquals(expected, result);
-    }
-
-    @ParameterizedTest
     @MethodSource("provideRangeArguments")
     void shouldParseRangeArguments(String argument, CronTimeUnit argType, List<Integer> expected) {
-        List<Integer> result = parseTimeUnitExpression(argument, argType);
-        assertEquals(expected, result);
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideComplexCommaSeparatedArguments")
-    void shouldParseComplexCommaSeparatedArguments(String argument, CronTimeUnit argType, List<Integer> expected) {
         List<Integer> result = parseTimeUnitExpression(argument, argType);
         assertEquals(expected, result);
     }
@@ -56,6 +43,39 @@ class CronExpressionParserTest {
         assertEquals(expected, result);
     }
 
+    @ParameterizedTest
+    @MethodSource("provideSimpleCommaSeparatedArguments")
+    void shouldParseSimpleCommaSeparatedArguments(String argument, CronTimeUnit argType, List<Integer> expected) {
+        List<Integer> result = parseTimeUnitExpression(argument, argType);
+        assertEquals(expected, result);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideComplexCommaSeparatedArguments")
+    void shouldParseComplexCommaSeparatedArguments(String argument, CronTimeUnit argType, List<Integer> expected) {
+        List<Integer> result = parseTimeUnitExpression(argument, argType);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionForWrongRange() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> parseTimeUnitExpression("4-2", CronTimeUnit.MINUTE)
+        );
+
+        assertNotNull(exception.getMessage());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionForArgumentOutsideOfRange() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> parseTimeUnitExpression("66", CronTimeUnit.MINUTE)
+        );
+
+        assertNotNull(exception.getMessage());
+    }
 
     private static Stream<Arguments> provideStarArguments() {
         return Stream.of(
@@ -64,16 +84,6 @@ class CronExpressionParserTest {
                 Arguments.of("*", CronTimeUnit.DAY_OF_MONTH, IntStream.range(1,32).boxed().collect(Collectors.toList())),
                 Arguments.of("*", CronTimeUnit.MONTH, IntStream.range(1,13).boxed().collect(Collectors.toList())),
                 Arguments.of("*", CronTimeUnit.DAY_OF_WEEK, IntStream.range(1,8).boxed().collect(Collectors.toList()))
-        );
-    }
-
-    private static Stream<Arguments> provideSimpleCommaSeparatedArguments() {
-        return Stream.of(
-                Arguments.of("1,2,3", CronTimeUnit.MINUTE, List.of(1,2,3)),
-                Arguments.of("4,22", CronTimeUnit.HOUR,  List.of(4,22)),
-                Arguments.of("1,3,5", CronTimeUnit.DAY_OF_MONTH,List.of(1,3,5)),
-                Arguments.of("1,2,11", CronTimeUnit.MONTH, List.of(1,2,11)),
-                Arguments.of("4,5", CronTimeUnit.DAY_OF_WEEK, List.of(4,5))
         );
     }
 
@@ -97,6 +107,16 @@ class CronExpressionParserTest {
         );
     }
 
+    private static Stream<Arguments> provideSimpleCommaSeparatedArguments() {
+        return Stream.of(
+                Arguments.of("1,2,3", CronTimeUnit.MINUTE, List.of(1,2,3)),
+                Arguments.of("4,22", CronTimeUnit.HOUR,  List.of(4,22)),
+                Arguments.of("1,3,5", CronTimeUnit.DAY_OF_MONTH,List.of(1,3,5)),
+                Arguments.of("1,2,11", CronTimeUnit.MONTH, List.of(1,2,11)),
+                Arguments.of("4,5", CronTimeUnit.DAY_OF_WEEK, List.of(4,5))
+        );
+    }
+
     private static Stream<Arguments> provideComplexCommaSeparatedArguments() {
         return Stream.of(
                 Arguments.of("1,2-4", CronTimeUnit.MINUTE, List.of(1,2,3,4)),
@@ -116,8 +136,4 @@ class CronExpressionParserTest {
                 Arguments.of("*/3", CronTimeUnit.DAY_OF_WEEK, List.of(1,4,7))
         );
     }
-
-
-
-
 }

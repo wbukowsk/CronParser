@@ -41,12 +41,17 @@ This application does not require any special installation. Ensure that Java is 
 ## Expected Output
 
 - The application will parse the cron expression and output a table. For example, the cron string `*/15 0 1,15 * 1-5 /usr/bin/find` will produce:
-  minute        0 15 30 45
-  hour          0
-  day of month  1 15
-  month         1 2 3 4 5 6 7 8 9 10 11 12
-  day of week   1 2 3 4 5
-  command       /usr/bin/find
+
+|              |                            |
+|--------------|----------------------------|
+| Minute       | 0 15 30 45                 |
+| Hour         | 0                          |
+| Day of Month | 1 15                       |
+| Month        | 1 2 3 4 5 6 7 8 9 10 11 12 |
+| Day of Week  | 1 2 3 4 5                  |
+| Command      | /usr/bin/find              |
+
+
 
 ## Running Tests
 

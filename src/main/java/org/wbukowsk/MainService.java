@@ -12,9 +12,10 @@ import static org.wbukowsk.cronexpression.CronExpressionParser.parseTimeUnitExpr
 import static org.wbukowsk.cronexpression.CronTimeUnit.*;
 
 public class MainService {
-    int commandPosition = 5;
+    private static final int commandPosition = 5;
 
-    public OutputData produceOutputData(String inputExpression) {
+    // assumes inputExpression in format "*/15 0 1,15 * 1-5 /usr/bin/find"
+    public static OutputData produceOutputData(String inputExpression) {
         List<String> splitArguments = List.of(inputExpression.split("\\s+"));
         Map<CronTimeUnit, String> cronUnitToValue = buildCronExpressionMap(splitArguments.subList(0, commandPosition));
 
@@ -29,7 +30,7 @@ public class MainService {
 
     }
 
-    private Map<CronTimeUnit, String> buildCronExpressionMap(List<String> cronExpressionUnits) {
+    private static Map<CronTimeUnit, String> buildCronExpressionMap(List<String> cronExpressionUnits) {
         HashMap<CronTimeUnit, String> cronExpressionMap = new HashMap<>();
         cronExpressionMap.put(MINUTE, cronExpressionUnits.get(0));
         cronExpressionMap.put(HOUR, cronExpressionUnits.get(1));
